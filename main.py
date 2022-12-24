@@ -12,24 +12,77 @@ from sklearn.metrics import mean_squared_error
 import numpy as np
 import os
 
+global adjusted
+adjusted = np.zeros(10)
+global adjusted_freq
+adjusted_freq = np.zeros(10)
+
+def compute_adjustment(train_loader, device, tro = 1.0):
+    """compute the base probabilities"""
+
+    label_freq = {}
+    for i, (inputs,target,s5,s4,s3,s2,s1) in enumerate(train_loader):
+        target = target.to(device)
+        for j in target:
+            key = int(j*10)
+            label_freq[key] = label_freq.get(key, 0) + 1
+    label_freq = dict(sorted(label_freq.items()))
+    label_freq_array = np.array(list(label_freq.values()))
+    label_freq_array = label_freq_array / label_freq_array.sum()
+    adjustments = np.log(label_freq_array ** tro + 1e-12)
+    adj_freq = np.zeros(len(adjustments))
+    for i in range(len(adjustments)):
+        adj_freq[i] = adjustments[i]*(i+1)*0.1
+    mean_val = sum(adj_freq)/sum(adjustments)
+    var = (0.1-mean_val)**2*adjustments[0]
+    for i in range(1,len(adjustments)):
+        var+= ((i+1)*0.1-mean_val)**2*adjustments[i]
+    var = var/sum(adjustments)    
+    return mean_val,var
+
 
 def train(model, device, train_loader, optimizer,criterion, epoch):
+    global adjusted
+    global adjusted_freq
     model.train()
     p =[]
     t =[]
+    mean_adj,var_adj = compute_adjustment(train_loader, device)
 
     for batch_idx, (data1,s6,s5,s4,s3,s2,s1) in enumerate(train_loader):
         data1,s6,s5,s4,s3,s2,s1 = data1.to(device),s6.to(device),s5.to(device),s4.to(device),s3.to(device),s2.to(device),s1.to(device)
 
         optimizer.zero_grad()
-        op1, op2,op3,op4,op5,op6 = model(data1)
+        op11,op21,op31,op41,op51,op61 = model(data1)
+        op12,op22,op32,op42,op52,op62 = model(data1)
+        op13,op23,op33,op43,op53,op63 = model(data1)
+        op14,op24,op34,op44,op54,op64 = model(data1)
+        op15,op25,op35,op45,op55,op65 = model(data1)
+
+        op1 = (op11+op12+op13+op14+op15)/5
+        op2 = (op21+op22+op23+op24+op25)/5
+        op3 = (op31+op32+op33+op34+op35)/5
+        op4 = (op41+op42+op43+op44+op45)/5
+        op5 = (op51+op52+op53+op54+op55)/5
+        op6 = (op61+op62+op63+op64+op65)/5
+
+        var6 = (op61-op6)**2
+        var6+ = (op62-op6)**2
+        var6+ = (op63-op6)**2
+        var6+ = (op64-op6)**2
+        var6+ = (op65-op6)**2
+        var6/=5
+
+        op6_final = var6*mean_adj+var_adj*op6
+        op6_final = op6_final/(var6+var_adj)
+
 
         loss0 = bce_loss(op1[:,0], s1)
         loss1 = bce_loss(op2[:,0],s2)
         loss2 = bce_loss(op3[:,0], s3)
         loss3 = bce_loss(op4[:,0], s4)
         loss4 = bce_loss(op5[:,0], s5)
-        loss5 = bce_loss(op6[:,0], s6)
+        loss5 = bce_loss(op6_final[:,0], s6)
 
 
         loss1.backward(retain_graph=True)
