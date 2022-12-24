@@ -16,7 +16,7 @@ Install the following libraries before running the code
 
 ### Training
 
-* Download the dataset from the link given in the paper (https://drive.google.com/drive/folders/1Nvnt_S_vRsv0fTH1JoCraGcO_UZp8ZjG)
+* Download the dataset from the link given in the paper (http://aiimsnets.org/microsuturing.asp)
 
 * Download the pre-trained weights (.pth files) for Res2Net using the following link: (https://drive.google.com/drive/folders/1zdZumgp-Ga65pa-8jjLTyUh-tKDhDaKu)
 
