@@ -23,8 +23,8 @@ Install the following libraries before running the code
 * Run the program "preprocess.py", after making all the required changes as per comments to process the dataset
 
 * To train the system, Run "main.py" by making the following changes
-	* Change the path in line 120 to training data
-	* Change the path in line 121 to the testing data
+	* Change the path in line 173 to training data
+	* Change the path in line 174 to the testing data
 
 
 ### Testing
