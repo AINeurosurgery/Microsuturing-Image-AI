@@ -82,14 +82,14 @@ if __name__=="__main__":
         # transforms.Scale()/
     ])
 
-    trainset = customdata(root="all_param_data/train/",train=True,transforms=mt)
-    testset = customdata(root="all_param_data/test/",train=False,transforms=mt)
+    trainset = customdata(root="data/Train_cohort/",train=True,transforms=mt)
+    testset = customdata(root="data/Validation_cohort/",train=False,transforms=mt)
 
     train_loader = DataLoader(trainset,batch_size=32,shuffle=True,drop_last=True,num_workers=6)
     test_loader = DataLoader(testset,batch_size=1,shuffle=False,drop_last=False,num_workers=6)
 
     model = arch1().to(device)
-    model.load_state_dict(torch.load('models/test_model83.pth.tar'))
+    model.load_state_dict(torch.load('models/test_model78.pth.tar'))
     print(model)
 
 

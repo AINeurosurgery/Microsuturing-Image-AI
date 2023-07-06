@@ -67,10 +67,10 @@ def train(model, device, train_loader, optimizer,criterion, epoch):
         op6 = (op61+op62+op63+op64+op65)/5
 
         var6 = (op61-op6)**2
-        var6+ = (op62-op6)**2
-        var6+ = (op63-op6)**2
-        var6+ = (op64-op6)**2
-        var6+ = (op65-op6)**2
+        var6+= (op62-op6)**2
+        var6+= (op63-op6)**2
+        var6+= (op64-op6)**2
+        var6+= (op65-op6)**2
         var6/=5
 
         op6_final = var6*mean_adj+var_adj*op6
@@ -159,9 +159,11 @@ def test(model, device, test_loader,criterion):
    
 
 if __name__=="__main__":
-
+    
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(device)
+    if not os.path.isdir("models"):
+        os.mkdir("models")
     torch.manual_seed(42)
 
     mt = transforms.Compose([
@@ -170,8 +172,8 @@ if __name__=="__main__":
         # transforms.Scale()/
     ])
 
-    trainset = customdata(root="all_param_data/train/",train=True,transforms=mt)
-    testset = customdata(root="all_param_data/test/",train=False,transforms=mt)
+    trainset = customdata(root="data/Train_cohort/",train=True,transforms=mt)
+    testset = customdata(root="data/Validation_cohort/",train=False,transforms=mt)
 
     train_loader = DataLoader(trainset,batch_size=32,shuffle=True,drop_last=True,num_workers=6)
     test_loader = DataLoader(testset,batch_size=1,shuffle=False,drop_last=False,num_workers=6)
@@ -187,7 +189,7 @@ if __name__=="__main__":
     optimizer = torch.optim.Adam(model.parameters(),lr=2e-4)
 
 
-    num_epochs = 100
+    num_epochs = 50
     global maxv
     maxv = 100
 
